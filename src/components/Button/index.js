@@ -1,7 +1,7 @@
 import React from 'react'
 import './styles.css'
 
-function Button({text, onClick, blue,disabled}) {
+function Button({text, onClick, blue, disabled}) {
   return (
     <div
      className = {blue ? "btn btn-blue" : "btn"} 

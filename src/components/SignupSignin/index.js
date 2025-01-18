@@ -25,13 +25,13 @@ function  SignupSigninComponent() {
     console.log("Email", email );
     console.log("Password", password);
     console.log("ConfirmPassword", confirmPassword);
-    //Authenticate the user, or basically create a new account using email and password
+   
     
-    if(name!="" && email!="" && password!="" && confirmPassword!=""){
+    if(name !== "" && email !== "" && password !== "" && confirmPassword !== ""){
       if(password === confirmPassword){
         createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          // Signed up 
+         
           const user = userCredential.user;
           console.log("user>>>", user);
           toast.success("User Created!");
@@ -41,6 +41,7 @@ function  SignupSigninComponent() {
           setPassword("");
           setConfirmPassword("");
           createDoc(user);
+          navigate("/dashboard")
           
           // ...
         })
@@ -65,7 +66,7 @@ function  SignupSigninComponent() {
     console.log("Email", email);
     console.log("Password", password);
     setLoading(true);
-    if(email!="" && password!=""){
+    if(email != "" && password != ""){
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
@@ -81,7 +82,7 @@ function  SignupSigninComponent() {
         const errorCode = error.code;
         const errorMessage = error.message;
         setLoading(false);
-        toast.error("errorMessage");
+        toast.error(errorMessage);
       });
     }else{
       toast.error("All fields are mandatory!")
@@ -113,7 +114,7 @@ function  SignupSigninComponent() {
         setLoading(false);
       }
     }else{
-      toast.error("Doc already exists");
+     // toast.error("Doc already exists");
       setLoading(false);
     }
   }
@@ -122,20 +123,19 @@ function  SignupSigninComponent() {
     try{
       signInWithPopup(auth, provider)
       .then((result) => {
-       // This gives you a Google Access Token. You can use it to access the Google API.
+      
        const credential = GoogleAuthProvider.credentialFromResult(result);
        const token = credential.accessToken;
-       // The signed-in user info.
+      
        const user = result.user;
        console.log("user>>>", user)
        createDoc(user);
        setLoading(false);
        navigate("/dashboard");
        toast.success("User Authenticated!")
-       // IdP data available using getAdditionalUserInfo(result)
-       // ...
+      
        }).catch((error) => {
-       // Handle Errors here.
+     
        setLoading(false);
        const errorCode = error.code;
        const errorMessage = error.message;

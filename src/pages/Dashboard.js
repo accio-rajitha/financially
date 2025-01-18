@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Cards from '../components/Cards';
 import AddIncomeModal from '../components/Modals/addIncome'; 
 import AddExpenseModal from '../components/Modals/addExpense'; 
-import {addDoc,collection, query,getDoc} from 'firebase/firestore';
+import {addDoc,collection, query, getDocs} from 'firebase/firestore';
 import {auth,db} from "../firebase";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { toast } from 'react-toastify';
@@ -11,12 +11,13 @@ import moment from 'moment';
 import TransactionsTable from '../components/TransactionsTable/index';
 import ChartComponent from '../components/Charts';
 import NoTransactions from '../components/TransactionsTable/NoTransactions';
+
 function Dashboard() {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [user] = useAuthState(auth);
     const [isExpenseModalVisible, setIsExpenseModalVisible] = useState(false);
-    const [isIncomeModalVisible, setIncomeModalVisible] = useState(false);
+    const [isIncomeModalVisible, setIsIncomeModalVisible] = useState(false);
     const [income, setIncome] = useState(0);
     const [expense, setExpense] = useState(0);
     const [totalBalance, setTotalBalance] = useState(0);
@@ -26,7 +27,7 @@ function Dashboard() {
     };
 
     const showIncomeModal = () => {
-        setIncomeModalVisible(true);
+        setIsIncomeModalVisible(true);
     };
 
     const handleExpenseCancel = () => {
@@ -34,7 +35,7 @@ function Dashboard() {
     };
 
     const handleIncomeCancel = () => {
-        setIncomeModalVisible(false);
+        setIsIncomeModalVisible(false);
     };
 
     const onFinish = (values, type) => {
@@ -60,11 +61,11 @@ function Dashboard() {
             let newArr = transactions;
             newArr.push(transaction);
             setTransactions(newArr);
+            calculateBalance();
             
         }catch (e){
             console.error("Error Adding Document", e);
-            
-            if(!many)toast.error("Couldn't add transaction");
+            toast.error("Couldn't add transaction");
         
         }
     }
@@ -90,14 +91,14 @@ function Dashboard() {
 
         setIncome(incomeTotal);
         setExpense(expenseTotal);
-        setTotalBalance(incomeTotal = expenseTotal);
+        setTotalBalance(incomeTotal - expenseTotal);
     };
 
     async function fetchTransactions(){
         setLoading(true);
         if(user){
-            const q = query(collection(db, `user/${user.uid}/transactions`));
-            const querySnapshot = await getDoc(q);
+            const q = query(collection(db, `users/${user.uid}/transactions`));
+            const querySnapshot = await getDocs(q);
             let transactionsArray = [];
             querySnapshot.forEach((doc) => {
                 transactionsArray.push(doc.data());
